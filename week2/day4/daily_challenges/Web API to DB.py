@@ -7,7 +7,7 @@ from psycopg2.extras import execute_values
 
 API_URL = "https://restcountries.com/v3.1/all?fields=name,capital,flag,subregion,population"
 
-DB_NAME = os.getenv("PGDATABASE", "Restaurant_Menu")
+DB_NAME = os.getenv("PGDATABASE", "restaurant")
 DB_USER = os.getenv("PGUSER", "postgres")
 DB_PASSWORD = os.getenv("PGPASSWORD", "root")
 DB_HOST = os.getenv("PGHOST", "localhost")
