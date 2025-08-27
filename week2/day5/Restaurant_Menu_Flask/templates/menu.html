@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Menu</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+    <!-- navbar -->
+    <nav>
+        Restaurant Menu Manager
+    </nav>
+
+    <h1 style="text-align:center; margin-top:20px;">Menu</h1>
+
+    <div style="text-align:center; margin-bottom:20px;">
+        <a href="{{ url_for('add_item') }}">
+            <button>Add Item</button>
+        </a>
+    </div>
+
+    <table>
+        <tr>
+            <th>ID</th>
+            <th>Item Name</th>
+            <th>Price</th>
+            <th>Actions</th>
+        </tr>
+        {% for item in items %}
+        <tr>
+            <td>{{ item[0] }}</td>
+            <td>{{ item[1] }}</td>
+            <td>{{ item[2] }}</td>
+            <td>
+                <a href="{{ url_for('update_item', item_id=item[0]) }}">
+                    <button>Update</button>
+                </a>
+                <a href="{{ url_for('delete_item', item_id=item[0]) }}">
+                    <button>Delete</button>
+                </a>
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+
+</body>
+</html>
