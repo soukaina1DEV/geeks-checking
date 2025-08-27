@@ -51,7 +51,7 @@ CREATE TABLE customer_review (
     CONSTRAINT fk_language FOREIGN KEY (language_id) 
         REFERENCES language (language_id)
 );
-
+..
                                 
 -- 6. Add 2 movie reviews
 

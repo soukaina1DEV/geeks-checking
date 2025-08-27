@@ -3,6 +3,7 @@
 
 -- 1. Use UPDATE to change the language of some films
 
+
 UPDATE film
 SET language_id = 2   
 WHERE film_id = 1;
@@ -12,17 +13,20 @@ WHERE film_id = 1;
 
 -- (Query to show foreign keys of table customer)
 
-SELECT conname, conrelid::regclass AS table_name, confrelid::regclass AS referenced_table
-FROM pg_constraint
-WHERE conrelid = 'customer'::regclass AND contype = 'f';
+
+foreign keys in the table customer are :
+store_id → reference table store(id) 
+address_id → reference table address(id)
 
 
 -- 3. Drop the table customer_review
+
 
 DROP TABLE IF EXISTS customer_review CASCADE;
 
 
 -- 4.Find how many rentals are still outstanding
+
 
 SELECT COUNT(*) AS outstanding_rentals
 FROM rental
@@ -30,6 +34,7 @@ WHERE return_date IS NULL;
 
 
 -- 5.Find the 30 most expensive outstanding movies
+
 
 SELECT f.film_id, f.title, f.rental_rate
 FROM rental r
