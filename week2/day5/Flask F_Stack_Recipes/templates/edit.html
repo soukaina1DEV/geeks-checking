@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+
+{% block content %}
+<main class="max-w-7xl mx-auto my-10">
+  <form
+    action="/edit/{{ recipe.id }}"
+    method="post"
+    class="flex flex-col gap-4 max-w-2xl mx-auto mt-4 p-6 bg-white border border-gray-200 rounded-md shadow-md"
+  >
+    <h1 class="text-2xl font-bold text-gray-700">Edit Recipe</h1>
+
+    <!-- title -->
+    <input
+      type="text"
+      name="title"
+      value="{{ recipe.title }}"
+      placeholder="Title"
+      required
+      class="border border-gray-300 rounded-md p-2"
+    />
+
+    <!-- ingredients -->
+    <textarea
+      name="ingredients"
+      placeholder="Ingredients"
+      rows="4"
+      required
+      class="border border-gray-300 rounded-md p-2"
+    >{{ recipe.ingredients }}</textarea>
+
+    <!-- instructions -->
+    <textarea
+      name="instructions"
+      placeholder="Instructions"
+      rows="6"
+      required
+      class="border border-gray-300 rounded-md p-2"
+    >{{ recipe.instructions }}</textarea>
+
+    <!-- category -->
+<div>
+  <select
+    id="category"
+    name="category"
+    required
+    class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring focus:ring-green-300"
+  >
+    <option value="" disabled>Select a category</option>
+    <option value="Dessert" {% if recipe.category == "Dessert" %}selected{% endif %}>Dessert</option>
+    <option value="Salad" {% if recipe.category == "Salad" %}selected{% endif %}>Salad</option>
+    <option value="Main Course" {% if recipe.category == "Main Course" %}selected{% endif %}>Main Course</option>
+    <option value="Breakfast" {% if recipe.category == "Breakfast" %}selected{% endif %}>Breakfast</option>
+    <option value="Appetizer" {% if recipe.category == "Appetizer" %}selected{% endif %}>Appetizer</option>
+  </select>
+</div>
+    
+
+    <!-- submit button -->
+    <button
+      type="submit"
+      class="bg-green-600 text-white px-4 py-2 rounded-md flex items-center justify-center gap-2 hover:bg-green-700"
+    >
+      <i class="bi bi-check-lg"></i>
+      Save Changes
+    </button>
+  </form>
+</main>
+{% endblock %}

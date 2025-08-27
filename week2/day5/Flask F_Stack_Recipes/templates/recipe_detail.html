@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+
+{% block content %}
+<main class="max-w-5xl mx-auto my-10">
+  <h1 class="text-2xl font-bold text-gray-700">Recipe Detail</h1>
+
+  <div
+    class="bg-white border border-gray-200 rounded-md p-6 shadow-md"
+  >
+    <!-- image -->
+    <div class="relative overflow-hidden rounded-md">
+      <img
+        src="https://picsum.photos/1000/600?random={{ recipe.id }}"
+        alt="{{ recipe.title }}"
+        class="w-full h-96 object-cover rounded-md"
+      />
+      <div
+        class="absolute top-2 left-2 bg-orange-700 text-white px-3 py-1 rounded-md text-sm"
+      >
+        {{ recipe.category }}
+      </div>
+    </div>
+
+    <!-- title -->
+    <h2 class="text-3xl font-bold mt-4">{{ recipe.title }}</h2>
+
+    <!-- ingredients -->
+    <div class="mt-4">
+      <h3 class="text-xl font-semibold text-gray-700">Ingredients</h3>
+      <p class="text-gray-600 whitespace-pre-line">{{ recipe.ingredients }}</p>
+    </div>
+
+    <!-- instructions -->
+    <div class="mt-6">
+      <h3 class="text-xl font-semibold text-gray-700">Instructions</h3>
+      <p class="text-gray-600 whitespace-pre-line">{{ recipe.instructions }}</p>
+    </div>
+
+    <!-- created date -->
+    <p class="text-gray-500 text-sm mt-6">
+      Added on: {{ recipe.created_at }}
+    </p>
+
+    <!-- actions -->
+    <div class="flex items-center gap-3 mt-6">
+      <a
+        href="/edit/{{ recipe.id }}"
+        class="bg-green-700 text-white px-4 py-2 rounded-md flex items-center justify-center gap-2 hover:bg-green-700"
+      >
+        <i class="bi bi-pencil-fill"></i>
+        Edit Recipe
+      </a>
+
+      <form action="/delete/{{ recipe.id }}" method="post">
+        <button
+          type="submit"
+          class="bg-red-600 text-white px-4 py-2 rounded-md flex items-center justify-center gap-2 hover:bg-red-700"
+        >
+          <i class="bi bi-trash-fill"></i>
+          Delete Recipe
+        </button>
+      </form>
+    </div>
+  </div>
+</main>
+{% endblock %}
