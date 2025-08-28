@@ -1,0 +1,16 @@
+{
+  "sqltools.connections": [
+    {
+      "pgOptions": {
+        "ssl": {
+          "rejectUnauthorized": false
+        }
+      },
+      "previewLimit": 50,
+      "server": "localhost",
+      "driver": "PostgreSQL",
+      "name": "Recipes",
+      "connectString": "postgresql://postgres:YOUR_PASSWORD@localhost:5432/recipes_db"
+    }
+  ]
+}
