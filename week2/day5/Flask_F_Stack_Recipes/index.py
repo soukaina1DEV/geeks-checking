@@ -7,24 +7,34 @@ from math import ceil
 load_dotenv()
 
 app = Flask(__name__)
-app.secret_key = os.getenv('SECRET_KEY')
+app.secret_key = os.getenv('SECRET_KEY', 'dev-secret')
 
+# عدد الوصفات في كل صفحة
+PAGE_SIZE = 8
+
+
+# الصفحة الرئيسية مع Pagination
 @app.route('/', methods=['GET'])
 def index():
-    pages = 8
-    page = request.args.get('page', 1, type = int)
-    offset = (page -1)* pages
-    conn = connect_to_db()               
-    if not conn:
-        return render_template('index.html', recipes=[])
+    page = request.args.get('page', 1, type=int)
+    offset = (page - 1) * PAGE_SIZE
 
-    cursor = conn.cursor()           
-    cursor.execute("SELECT * FROM recipes LIMIT %s OFFSET %s", (pages,offset,))  
-    recipes = cursor.fetchall()
+    conn = connect_to_db()
+    if not conn:
+        return render_template('index.html', recipes=[], page=1, total_pages=1)
+
+    cursor = conn.cursor()
+    # عدد الوصفات الكلي
     cursor.execute("SELECT COUNT(*) FROM recipes;")
     total = cursor.fetchone()[0]
-    total_pages = ceil(total / pages)
- 
+    total_pages = ceil(total / PAGE_SIZE)
+
+    # الوصفات ديال الصفحة الحالية
+    cursor.execute(
+        "SELECT * FROM recipes ORDER BY id DESC LIMIT %s OFFSET %s;",
+        (PAGE_SIZE, offset)
+    )
+    recipes = cursor.fetchall()
     conn.close()
 
     return render_template(
@@ -32,7 +42,7 @@ def index():
         recipes=recipes,
         page=page,
         total_pages=total_pages
-)
+    )
 
 
 # تفاصيل وصفة
@@ -43,7 +53,11 @@ def recipe_detail(id):
         return render_template('recipe_detail.html', recipe=None)
 
     cursor = conn.cursor()
-    cursor.execute("SELECT * FROM recipes WHERE id = %s", (id,))
+     # زيد view واحد
+    cursor.execute("UPDATE recipes SET views = views + 1 WHERE id = %s;", (id,))
+    conn.commit()
+
+    cursor.execute("SELECT * FROM recipes WHERE id = %s;", (id,))
     recipe = cursor.fetchone()
     conn.close()
 
@@ -73,7 +87,7 @@ def create():
 
         cursor = conn.cursor()
         cursor.execute(
-            "INSERT INTO recipes (title, ingredients, instructions, category) VALUES (%s, %s, %s, %s)",
+            "INSERT INTO recipes (title, ingredients, instructions, category) VALUES (%s, %s, %s, %s);",
             (payload['title'], payload['ingredients'], payload['instructions'], payload['category'])
         )
         conn.commit()
@@ -93,7 +107,7 @@ def edit(id):
         return render_template('edit.html', recipe=None)
 
     cursor = conn.cursor()
-    cursor.execute("SELECT * FROM recipes WHERE id = %s", (id,))
+    cursor.execute("SELECT * FROM recipes WHERE id = %s;", (id,))
     recipe = cursor.fetchone()
 
     if request.method == 'POST':
@@ -103,7 +117,7 @@ def edit(id):
         category = request.form.get('category', '').strip()
 
         cursor.execute(
-            "UPDATE recipes SET title = %s, ingredients = %s, instructions = %s, category = %s WHERE id = %s",
+            "UPDATE recipes SET title = %s, ingredients = %s, instructions = %s, category = %s WHERE id = %s;",
             (title, ingredients, instructions, category, id)
         )
         conn.commit()
@@ -124,26 +138,68 @@ def delete(id):
         return redirect(url_for('index'))
 
     cursor = conn.cursor()
-    cursor.execute("DELETE FROM recipes WHERE id = %s", (id,))
+    cursor.execute("DELETE FROM recipes WHERE id = %s;", (id,))
     conn.commit()
     conn.close()
 
     flash("Recipe deleted successfully", "blue")
     return redirect(url_for('index'))
 
+
+# البحث
 @app.route('/search', methods=['GET'])
 def search():
     search_query = request.args.get('query', '').strip()
     conn = connect_to_db()
     if not conn:
-        return render_template('index.html', recipes=[])
+        return render_template('index.html', recipes=[], page=1, total_pages=1)
 
     cursor = conn.cursor()
-    cursor.execute("SELECT * FROM recipes where title ILIKE %s or category ILIKE %s", (f'%{search_query}%',f'%{search_query}%'))
+
+     # خزن كلمة البحث
+    if search_query:
+        cursor.execute("INSERT INTO search_logs (query) VALUES (%s);", (search_query,))
+        conn.commit()
+
+    cursor.execute(
+        "SELECT * FROM recipes WHERE title ILIKE %s OR category ILIKE %s;",
+        (f'%{search_query}%', f'%{search_query}%')
+    )
     recipes = cursor.fetchall()
     conn.close()
 
-    return render_template('index.html', recipes=recipes)
+    return render_template('index.html', recipes=recipes, page=1, total_pages=1)
+
+
+# Dashboard
+@app.route('/dashboard')
+def dashboard():
+    conn = connect_to_db()
+    cursor = conn.cursor()
+
+    # عدد الوصفات
+    cursor.execute("SELECT COUNT(*) FROM recipes;")
+    total_recipes = cursor.fetchone()[0]
+
+    # عدد الوصفات حسب الكاتيجوري
+    cursor.execute("SELECT category, COUNT(*) FROM recipes GROUP BY category;")
+    categories = cursor.fetchall()
+
+    # الكلمات الأكثر بحثاً
+    cursor.execute("SELECT query, COUNT(*) FROM search_logs GROUP BY query ORDER BY COUNT(*) DESC LIMIT 5;")
+    popular_searches = cursor.fetchall()
+
+    # الوصفات الأكثر مشاهدة
+    cursor.execute("SELECT title, views FROM recipes ORDER BY views DESC LIMIT 5;")
+    top_views = cursor.fetchall()
+
+    conn.close()
+
+    return render_template('dashboard.html',
+                           total_recipes=total_recipes,
+                           categories=categories,
+                           popular_searches=popular_searches,
+                           top_views=top_views)
 
 
 if __name__ == '__main__':

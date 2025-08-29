@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+{% block content %}
+
+<main class="max-w-7xl mx-auto my-10 grid gap-6">
+
+  <!-- Stats Cards -->
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <!-- Total Recipes -->
+    <div class="bg-white p-6 rounded-lg shadow text-center">
+      <h2 class="text-lg font-bold">Total Recipes</h2>
+      <p class="text-3xl text-orange-600">{{ total_recipes }}</p>
+    </div>
+
+    <!-- Most Viewed Recipes -->
+    <div class="bg-white p-6 rounded-lg shadow">
+      <h2 class="text-lg font-bold mb-3">Most Viewed Recipes</h2>
+      <ul>
+        {% for title, views in top_views %}
+        <li class="flex justify-between border-b py-1">
+          <span>{{ title }}</span>
+          <span class="font-semibold">{{ views }}</span>
+        </li>
+        {% endfor %}
+      </ul>
+    </div>
+  </div>
+
+  <!-- Charts -->
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+    <!-- Recipes by Category (Bar Chart) -->
+    <div class="bg-white p-6 rounded-lg shadow">
+      <h2 class="text-lg font-bold mb-4">Recipes by Category</h2>
+      <canvas id="categoryChart"></canvas>
+    </div>
+
+    <!-- Popular Searches (Pie Chart) -->
+    <div class="bg-white p-6 rounded-lg shadow">
+      <h2 class="text-lg font-bold mb-4">Popular Searches</h2>
+      <canvas id="searchChart"></canvas>
+    </div>
+
+  </div>
+
+</main>
+
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+  // Data from backend
+  const categories = {{ categories|tojson }};
+  const popularSearches = {{ popular_searches|tojson }};
+
+  // Category Chart (Bar)
+  const categoryLabels = categories.map(c => c[0]);
+  const categoryData = categories.map(c => c[1]);
+
+  new Chart(document.getElementById('categoryChart'), {
+    type: 'bar',
+    data: {
+      labels: categoryLabels,
+      datasets: [{
+        label: 'Recipes',
+        data: categoryData,
+        backgroundColor: 'rgba(249, 115, 22, 0.8)' // orange
+      }]
+    }
+  });
+
+  // Search Chart (Pie)
+  const searchLabels = popularSearches.map(s => s[0]);
+  const searchData = popularSearches.map(s => s[1]);
+
+  new Chart(document.getElementById('searchChart'), {
+    type: 'pie',
+    data: {
+      labels: searchLabels,
+      datasets: [{
+        data: searchData,
+        backgroundColor: [
+          '#f97316','#22c55e','#3b82f6','#eab308','#ef4444'
+        ]
+      }]
+    }
+  });
+</script>
+
+{% endblock %}

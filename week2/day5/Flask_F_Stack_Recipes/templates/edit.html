@@ -3,7 +3,7 @@
 {% block content %}
 <main class="max-w-7xl mx-auto my-10">
   <form
-    action="/edit/{{ recipe.id }}"
+    action="{{ url_for('edit', id=recipe[0]) }}"
     method="post"
     class="flex flex-col gap-4 max-w-2xl mx-auto mt-4 p-6 bg-white border border-gray-200 rounded-md shadow-md"
   >
@@ -13,7 +13,7 @@
     <input
       type="text"
       name="title"
-      value="{{ recipe.title }}"
+      value="{{ recipe[1] }}"
       placeholder="Title"
       required
       class="border border-gray-300 rounded-md p-2"
@@ -26,7 +26,7 @@
       rows="4"
       required
       class="border border-gray-300 rounded-md p-2"
-    >{{ recipe.ingredients }}</textarea>
+    >{{ recipe[2] }}</textarea>
 
     <!-- instructions -->
     <textarea
@@ -35,25 +35,24 @@
       rows="6"
       required
       class="border border-gray-300 rounded-md p-2"
-    >{{ recipe.instructions }}</textarea>
+    >{{ recipe[3] }}</textarea>
 
     <!-- category -->
-<div>
-  <select
-    id="category"
-    name="category"
-    required
-    class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring focus:ring-green-300"
-  >
-    <option value="" disabled>Select a category</option>
-    <option value="Dessert" {% if recipe.category == "Dessert" %}selected{% endif %}>Dessert</option>
-    <option value="Salad" {% if recipe.category == "Salad" %}selected{% endif %}>Salad</option>
-    <option value="Main Course" {% if recipe.category == "Main Course" %}selected{% endif %}>Main Course</option>
-    <option value="Breakfast" {% if recipe.category == "Breakfast" %}selected{% endif %}>Breakfast</option>
-    <option value="Appetizer" {% if recipe.category == "Appetizer" %}selected{% endif %}>Appetizer</option>
-  </select>
-</div>
-    
+    <div>
+      <select
+        id="category"
+        name="category"
+        required
+        class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring focus:ring-green-300"
+      >
+        <option value="" disabled>Select a category</option>
+        <option value="Dessert" {% if recipe[4] == "Dessert" %}selected{% endif %}>Dessert</option>
+        <option value="Salad" {% if recipe[4] == "Salad" %}selected{% endif %}>Salad</option>
+        <option value="Main Course" {% if recipe[4] == "Main Course" %}selected{% endif %}>Main Course</option>
+        <option value="Breakfast" {% if recipe[4] == "Breakfast" %}selected{% endif %}>Breakfast</option>
+        <option value="Appetizer" {% if recipe[4] == "Appetizer" %}selected{% endif %}>Appetizer</option>
+      </select>
+    </div>
 
     <!-- submit button -->
     <button
