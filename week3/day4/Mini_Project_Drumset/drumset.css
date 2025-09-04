@@ -1,0 +1,44 @@
+body {
+  margin: 0;
+  padding: 0;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: url("screenshot.png") no-repeat center center/cover;
+  font-family: Arial, sans-serif;
+}
+
+.set {
+  display: flex;
+  gap: 20px;
+}
+
+.drum {
+  width: 100px;
+  height: 100px;
+  border: 2px solid yellow;
+  background: rgba(0, 0, 0, 0.8);
+  color: white;
+  font-size: 28px;
+  font-weight: bold;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: all 0.1s ease;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.drum span {
+  font-size: 14px;
+  color: rgb(255, 213, 0);
+  margin-top: 5px;
+}
+
+.drum.playing {
+  transform: scale(1.2);
+  box-shadow: 0 0 30px yellow;
+  border-color: yellow;
+}
