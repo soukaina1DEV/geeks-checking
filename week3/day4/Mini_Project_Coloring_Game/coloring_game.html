@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Coloring_Game</title>
+</head>
+<body>
+  <h1>🎨 Coloring Squares</h1>
+  <div id="palette"></div>
+  <div id="grid"></div>
+
+  <script>
+    let mousedown = false;
+    let colornow = 'black';
+
+    const colors = ['red', 'green', 'blue', 'yellow', 'purple', 'orange'];
+    const palette = document.getElementById('palette');
+
+    colors.forEach(color => { 
+      const btn = document.createElement('button');
+      btn.style.backgroundColor = color;
+      btn.style.width = '30px';
+      btn.style.height = '30px';
+      btn.style.margin = '2px';
+      btn.addEventListener('click', () => {
+        colornow = color; 
+      });
+      palette.appendChild(btn);
+    });
+
+    const grid = document.getElementById('grid');
+
+    function createGrid(size) {
+      grid.innerHTML = '';
+      grid.style.display = 'grid';
+      grid.style.gridTemplateColumns = `repeat(${size}, 20px)`;
+      grid.style.gridTemplateRows = `repeat(${size}, 20px)`;
+
+      for (let i = 0; i < size * size; i++) {
+        const cell = document.createElement('div');
+        cell.style.width = '20px';
+        cell.style.height = '20px';
+        cell.style.border = '1px solid #ccc';
+        cell.style.backgroundColor = 'white';
+
+        cell.addEventListener('click', () => {
+          cell.style.backgroundColor = colornow;
+        });
+
+        cell.addEventListener('mouseover', () => {
+          if (mousedown) {
+            cell.style.backgroundColor = colornow;
+          }
+        });
+
+        grid.appendChild(cell);
+      }
+    }
+
+    document.body.addEventListener('mousedown', () => mousedown = true);
+    document.body.addEventListener('mouseup', () => mousedown = false);
+
+    createGrid(16);
+  </script>
+</body>
+</html>
