@@ -40,11 +40,6 @@ document.getElementById("clear").addEventListener("click", () => {
 
 
 
-
-
-
-
-
 // 🌟 Exercise 2 : Move the box
 
 let animate = document.getElementById('animate');
