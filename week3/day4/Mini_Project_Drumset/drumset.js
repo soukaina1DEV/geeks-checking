@@ -4,7 +4,7 @@ function playSound(e) {
   if (e.type === "keydown") {
     keyCode = e.keyCode;
   } else {
-    keyCode = Number(this.getAttribute("data-key"));
+    keyCode = Number(this.getAttribute("data-key"));  
   }
 
   const audio = document.querySelector(`audio[data-key="${keyCode}"]`);

@@ -5,9 +5,10 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
-  background: url("screenshot.png") no-repeat center center/cover;
-  font-family: Arial, sans-serif;
+  background: url("drumset.jpg") no-repeat center center/cover;
+  font-family: Arial, sans-serif; 
 }
+
 
 .set {
   display: flex;
@@ -18,12 +19,12 @@ body {
   width: 100px;
   height: 100px;
   border: 2px solid yellow;
-  background: rgba(0, 0, 0, 0.8);
+  background: rgba(1, 0, 0, 0.477);
   color: white;
   font-size: 28px;
   font-weight: bold;
   border-radius: 5px;
-  cursor: pointer;
+  cursor: pointer;  /* sourie b7al lid*/
   transition: all 0.1s ease;
   display: flex;
   flex-direction: column;
@@ -42,3 +43,6 @@ body {
   box-shadow: 0 0 30px yellow;
   border-color: yellow;
 }
+
+
+
