@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Event Manager</title>
+<!-- Tailwind (CDN for simplicity) -->
+<script src="https://cdn.tailwindcss.com"></script>
+<!-- Chart.js for stats page -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body class="bg-gray-50 text-gray-800">
+<nav class="bg-white border-b sticky top-0 z-10">
+<div class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
+<a href="/" class="font-bold text-indigo-600">EventManager</a>
+<button id="menuBtn" class="md:hidden px-3 py-2 border rounded">Menu</button>
+<ul id="menu" class="hidden md:flex gap-6">
+<li><a class="hover:text-indigo-600" href="{{ url_for('events_list') }}">Events</a></li>
+<li><a class="hover:text-indigo-600" href="{{ url_for('organizers_list') }}">Organizers</a></li>
+<li><a class="hover:text-indigo-600" href="{{ url_for('attendees_list') }}">Attendees</a></li>
+<li><a class="hover:text-indigo-600" href="{{ url_for('stats') }}">Dashboard</a></li>
+</ul>
+</div>
+<ul id="menuMobile" class="md:hidden hidden px-4 pb-3 space-y-2">
+<li><a class="block" href="{{ url_for('events_list') }}">Events</a></li>
+<li><a class="block" href="{{ url_for('organizers_list') }}">Organizers</a></li>
+<li><a class="block" href="{{ url_for('attendees_list') }}">Attendees</a></li>
+<li><a class="block" href="{{ url_for('stats') }}">Dashboard</a></li>
+</ul>
+</nav>
+
+
+<main class="max-w-6xl mx-auto px-4 py-6">
+{% with messages = get_flashed_messages(with_categories=true) %}
+{% if messages %}
+<div class="space-y-2 mb-4">
+{% for category, message in messages %}
+<div class="p-3 rounded border {{ 'bg-green-50 border-green-300' if category=='success' else '' }} {{ 'bg-red-50 border-red-300' if category=='danger' else '' }} {{ 'bg-yellow-50 border-yellow-300' if category=='warning' else '' }} {{ 'bg-blue-50 border-blue-300' if category=='info' else '' }}">
+{{ message }}
+</div>
+{% endfor %}
+</div>
+{% endif %}
+{% endwith %}
+
+
+{% block content %}{% endblock %}
+</main>
+
+
+<script>
+const btn = document.getElementById('menuBtn');
+const mobile = document.getElementById('menuMobile');
+if (btn) btn.addEventListener('click', () => mobile.classList.toggle('hidden'));
+</script>
+</body>
+</html>

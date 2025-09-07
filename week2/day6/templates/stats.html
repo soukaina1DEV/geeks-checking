@@ -1,0 +1,91 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="min-h-screen bg-gray-50 p-8">
+  <h1 class="text-3xl font-extrabold mb-10 text-center text-gray-800">
+    Dashboard
+  </h1>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+    <!-- Card 1 -->
+    <div class="bg-white rounded-xl shadow-md p-6">
+      <h2 class="text-lg font-semibold mb-4 text-gray-700">Events per Organizer</h2>
+      <canvas id="eventsPerOrganizer" class="w-full h-64"></canvas>
+    </div>
+
+    <!-- Card 2 -->
+    <div class="bg-white rounded-xl shadow-md p-6">
+      <h2 class="text-lg font-semibold mb-4 text-gray-700">Most Popular Events</h2>
+      <canvas id="popularEvents" class="w-full h-64"></canvas>
+    </div>
+  </div>
+
+  <!-- Full Width Card -->
+  <div class="bg-white rounded-xl shadow-md p-6 mt-8">
+    <h2 class="text-lg font-semibold mb-4 text-gray-700">Attendees Over Time</h2>
+    <canvas id="attendeesOverTime" class="w-full h-80"></canvas>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+  // Chart 1
+  fetch('/api/stats/events_per_organizer')
+    .then(res => res.json())
+    .then(result => {
+      new Chart(document.getElementById('eventsPerOrganizer'), {
+        type: 'bar',
+        data: {
+          labels: result.labels,
+          datasets: [{
+            label: 'Events',
+            data: result.data,
+            backgroundColor: 'rgba(59, 130, 246, 0.7)', // blue
+            borderRadius: 6
+          }]
+        },
+        options: { plugins: { legend: { display: false } } }
+      });
+    });
+
+  // Chart 2
+  fetch('/api/stats/popular_events')
+    .then(res => res.json())
+    .then(result => {
+      new Chart(document.getElementById('popularEvents'), {
+        type: 'bar',
+        data: {
+          labels: result.labels,
+          datasets: [{
+            label: 'Attendees',
+            data: result.data,
+            backgroundColor: 'rgba(16, 185, 129, 0.7)' // green
+          }]
+        },
+        options: { plugins: { legend: { display: false } } }
+      });
+    });
+
+  // Chart 3
+  fetch('/api/stats/attendees_over_time')
+    .then(res => res.json())
+    .then(result => {
+      new Chart(document.getElementById('attendeesOverTime'), {
+        type: 'line',
+        data: {
+          labels: result.labels,
+          datasets: [{
+            label: 'Registrations',
+            data: result.data,
+            borderColor: 'rgba(239, 68, 68, 1)', // red
+            backgroundColor: 'rgba(239, 68, 68, 0.2)',
+            fill: true,
+            tension: 0.3,
+            pointRadius: 4,
+            pointBackgroundColor: 'rgba(239, 68, 68, 1)'
+          }]
+        },
+        options: { scales: { y: { beginAtZero: true } } }
+      });
+    });
+</script>
+{% endblock %}

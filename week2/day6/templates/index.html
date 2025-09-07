@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="flex items-center justify-between mb-4">
+<h1 class="text-2xl font-semibold">Events</h1>
+<a href="{{ url_for('events_create') }}" class="px-4 py-2 bg-indigo-600 text-white rounded">+ New Event</a>
+</div>
+
+
+<form method="get" class="mb-4">
+<div class="flex gap-2">
+<input name="q" value="{{ q }}" class="flex-1 border rounded px-3 py-2" placeholder="Search events by name..." />
+<button class="px-4 py-2 border rounded">Search</button>
+</div>
+</form>
+
+
+<div class="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+{% for event in pagination.items %}
+<a href="{{ url_for('events_details', event_id=event.id) }}" class="block border rounded p-4 bg-white hover:shadow">
+<h2 class="font-semibold">{{ event.name }}</h2>
+<p class="text-sm text-gray-600">{{ event.date.strftime('%Y-%m-%d') }} • {{ event.location }}</p>
+<p class="mt-2 line-clamp-2"><strong> Organizer :  </strong>{{ event.organizer.name or '—' }}</p>
+
+</a>
+{% else %}
+<p>No events found.</p>
+{% endfor %}
+</div>
+
+
+<!-- Pagination -->
+<div class="flex items-center justify-center gap-2 mt-6">
+{% if pagination.has_prev %}
+<a class="px-3 py-1 border rounded" href="?page={{ pagination.prev_num }}&q={{ q }}">Prev</a>
+{% else %}
+<span class="px-3 py-1 border rounded opacity-50">Prev</span>
+{% endif %}
+
+
+<span>Page {{ pagination.page }} / {{ pagination.pages or 1 }}</span>
+
+
+{% if pagination.has_next %}
+<a class="px-3 py-1 border rounded" href="?page={{ pagination.next_num }}&q={{ q }}">Next</a>
+{% else %}
+<span class="px-3 py-1 border rounded opacity-50">Next</span>
+{% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="flex items-center justify-between mb-4">
+<h1 class="text-2xl font-semibold">{{ event.name }}</h1>
+<form method="post" action="{{ url_for('events_delete', event_id=event.id) }}" onsubmit="return confirm('Delete this event?')">
+<button class="px-3 py-2 bg-red-600 text-white rounded">Delete</button>
+</form>
+</div>
+<p class="text-gray-700 mb-2">
+<strong>Date:</strong> {{ event.date.strftime('%Y-%m-%d') }} • <strong>Location:</strong> {{ event.location }}
+</p>
+<p class="mb-4">{{ event.description or '—' }}</p>
+
+
+{% if event.organizer %}
+  <p><strong>Organizer:</strong> {{ event.organizer.name }}</p>
+{% else %}
+  <p><strong>Organizer:</strong> —</p>
+{% endif %}
+
+
+<h2 class="font-semibold mb-2">Registered Attendees ({{ attendees|length }})</h2>
+<ul class="list-disc ml-6 mb-4">
+{% for a in attendees %}
+<li>{{ a.name }} <span class="text-gray-500">({{ a.email }})</span></li>
+{% else %}
+<li>No attendees yet.</li>
+{% endfor %}
+</ul>
+
+
+<form method="post" action="{{ url_for('events_register', event_id=event.id) }}" class="flex gap-2 items-end">
+<div class="flex-1">
+<label class="block mb-1">Add Attendee</label>
+<select name="attendee_id" class="w-full border rounded px-3 py-2">
+{% for a in all_attendees %}
+<option value="{{ a.id }}">{{ a.name }} — {{ a.email }}</option>
+{% endfor %}
+</select>
+</div>
+<button class="px-4 py-2 bg-indigo-600 text-white rounded">Register</button>
+</form>
+{% endblock %}
