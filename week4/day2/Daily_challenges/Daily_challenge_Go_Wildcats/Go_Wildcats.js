@@ -42,3 +42,19 @@ gameInfo.forEach((player) => {
 });
 console.log(totalScore);
 // 71
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
