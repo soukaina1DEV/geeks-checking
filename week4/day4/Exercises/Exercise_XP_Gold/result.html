@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Form Result</title>
+</head>
+<body>
+  <h2>Form Data Received:</h2>
+  <section id="output"></section>
+
+  <script>
+    // 1. 
+    const params = new URLSearchParams(window.location.search);
+
+    // 2. 
+    const name = params.get("name");
+    const lastname = params.get("lastname");
+
+    // 3.
+    const output = document.getElementById("output");
+    output.textContent = `Hello ${name} ${lastname}, your data was received!`;
+  </script>
+</body>
+</html>

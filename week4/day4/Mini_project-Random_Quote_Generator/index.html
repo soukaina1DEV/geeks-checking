@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Random Quote Generator</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      margin: 20px;
+    }
+    #quote-box {
+      border: 1px solid #ccc;
+      padding: 20px;
+      margin: 20px auto;
+      width: 60%;
+      border-radius: 10px;
+      background: #f9f9f9;
+    }
+    button {
+      margin: 5px;
+      padding: 8px 15px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <h1>🌟 Random Quote Generator 🌟</h1>
+
+  <!-- Display Quote -->
+  <div id="quote-box">
+    <p id="quote-text">Press "Generate Quote" to start!</p>
+    <p id="quote-author"></p>
+    <p id="quote-likes"></p>
+  </div>
+
+  <button id="generate-btn">Generate Quote</button>
+
+  <!-- Add Quote Form -->
+  <h2>Add New Quote</h2>
+  <form id="add-quote-form">
+    <input type="text" id="new-quote" placeholder="Quote" required>
+    <input type="text" id="new-author" placeholder="Author" required>
+    <button type="submit">Add Quote</button>
+  </form>
+
+  <!-- Buttons for extra info -->
+  <h2>Quote Tools</h2>
+  <button id="char-btn">Count Characters (with spaces)</button>
+  <button id="char-nospace-btn">Count Characters (no spaces)</button>
+  <button id="word-btn">Count Words</button>
+  <button id="like-btn">Like ❤️</button>
+
+  <!-- Filter by Author -->
+  <h2>Filter Quotes by Author</h2>
+  <form id="filter-form">
+    <input type="text" id="filter-author" placeholder="Author name">
+    <button type="submit">Filter</button>
+  </form>
+  <div>
+    <button id="prev-btn">Previous</button>
+    <button id="next-btn">Next</button>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
