@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>RoboFriends</title>
+  <link rel="stylesheet" href="style.css"/>
+</head>
+<body>
+  <header class="navbar">
+    <h1 class="logo">ROBOFRIENDS</h1>
+
+    <div class="search-wrap">
+      <input
+        id="searchBox"
+        type="search"
+        placeholder="Search Robots (name, username, email)…"
+        aria-label="Search robots"
+        autocomplete="off"
+      />
+      <button id="clearBtn" aria-label="Clear search">×</button>
+    </div>
+  </header>
+
+  <main>
+    <p id="resultMeta" class="result-meta hidden">Showing 0 results</p>
+    <div id="robotContainer" class="cards" aria-live="polite"></div>
+    <p id="emptyState" class="empty" hidden>No robots found 🤖</p>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,133 @@
+:root{
+  --bg:#5b4db3;
+  --panel:#58c4a9;
+  --card:#ddf3f1;
+  --text:#0b2b33;
+  --muted:#5d6b73;
+}
+
+/* Base */
+*{box-sizing:border-box}
+body{
+  margin:0;
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  color:#fff;
+  background:#6e56cf;
+  background-image:
+    radial-gradient(transparent 3px, rgba(0,0,0,.04) 3px),
+    linear-gradient(135deg, #5a50c1 0%, #6e56cf 40%, #5f4fb9 100%);
+  background-size: 12px 12px, auto;
+  min-height:100svh;
+}
+
+/* Header */
+.navbar{
+  display:flex;
+  align-items:center;
+  gap:16px;
+  padding:16px;
+  background:var(--panel);
+  color:#053b3f;
+  position:sticky; top:0; z-index:10;
+  border-bottom-left-radius:12px;
+  border-bottom-right-radius:12px;
+}
+.logo{
+  margin:0;
+  letter-spacing:2px;
+  font-weight:900;
+}
+.search-wrap{
+  margin-left:auto;
+  position:relative;
+  display:flex;
+  align-items:center;
+  gap:8px;
+}
+#searchBox{
+  width:min(520px, 72vw);
+  padding:10px 14px;
+  border-radius:8px;
+  border:none;
+  outline:none;
+}
+#clearBtn{
+  appearance:none;
+  border:none;
+  background:#0b2b33;
+  color:#fff;
+  width:34px; height:34px;
+  border-radius:8px;
+  cursor:pointer;
+  opacity:.85;
+}
+#clearBtn:hover{opacity:1}
+
+/* Main */
+main{padding:24px}
+
+.result-meta{
+  margin:0 0 16px;
+  opacity:.9;
+}
+
+.cards{
+  display:grid;
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  gap:22px;
+  align-items:stretch;
+  justify-content:center;
+}
+
+.cards:has(.card:only-child){
+  display:flex;
+  justify-content:center;
+}
+.cards:has(.card:only-child) .card{
+  max-width:260px;   
+  width:100%;
+}
+
+
+.card{
+  background:var(--card);
+  color:var(--text);
+  border-radius:16px;
+  padding:16px;
+  box-shadow: 0 10px 24px rgba(0,0,0,.18);
+  transition: transform .15s ease, box-shadow .15s ease;
+}
+.card:hover{
+  transform: translateY(-4px);
+  box-shadow: 0 16px 32px rgba(0,0,0,.22);
+}
+.card img{
+  width:100%;
+  aspect-ratio:1/1;
+  object-fit:cover;
+  border-radius:14px;
+  background:#c7eceb;
+  margin-bottom:12px;
+}
+.card h3{
+  margin:6px 0 4px;
+}
+.card p{
+  margin:2px 0;
+  color:var(--muted);
+  word-break:break-word;
+}
+
+mark{
+  background:#ffe28a;
+  color:#222;
+  padding:0 .2em;
+  border-radius:.25em;
+}
+
+.empty{
+  text-align:center;
+  margin-top:28px;
+  font-size:1.05rem;
+  opacity:.95;
+}
