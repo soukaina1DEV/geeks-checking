@@ -1,0 +1,66 @@
+body {
+  margin: 0;
+  padding: 0;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  font-family: Arial, sans-serif;
+  color: white;
+  overflow: hidden;
+  background: black;
+}
+
+/* نجوم صغيرة كيضوو ويطفاو */
+body::before {
+  content: "";
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: transparent url("https://www.transparenttextures.com/patterns/stardust.png") repeat;
+  animation: twinkle 4s infinite alternate;
+  opacity: 0.8;
+  z-index: -1;
+}
+
+/* Animation ديال النجوم */
+@keyframes twinkle {
+  from { opacity: 0.6; }
+  to { opacity: 1; }
+}
+
+
+
+.logo {
+  font-size: 4rem;
+  margin-bottom: 20px;
+  color: yellow;
+  font-weight: bold;
+  text-shadow: 3px 3px 8px black;
+  font-family: 'Star Jedi', sans-serif; /* optional if you have Star Wars font */
+}
+
+.card {
+  border: 2px solid yellow;
+  border-radius: 10px;
+  padding: 20px;
+  width: 320px;
+  text-align: center;
+  background: rgba(0, 0, 0, 0.7);
+  margin-bottom: 15px;
+}
+
+button {
+  padding: 10px 20px;
+  font-size: 1rem;
+  font-weight: bold;
+  cursor: pointer;
+  background: yellow;
+  border: none;
+  border-radius: 6px;
+  transition: 0.3s;
+}
+
+button:hover {
+  background: orange;
+}
