@@ -1,0 +1,14 @@
+[
+  {
+    "title": "Frontend Intern",
+    "location": "Casablanca",
+    "skillsRequired": ["React", "JS", "Git"],
+    "jdSnippet": "We build UI with React and Git workflows."
+  },
+  {
+    "title": "Data Analyst Intern",
+    "location": "Rabat",
+    "skillsRequired": ["Python", "SQL", "Excel"],
+    "jdSnippet": "Work on dashboards and analytics using SQL and Python."
+  }
+]
