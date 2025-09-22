@@ -1,6 +1,3 @@
-Got it 👍
-Here’s your **complete `README.md` file content** — you can copy-paste it directly into a file called `README.md` inside your project folder:
-
 ```markdown
 # 🤖 HR AI Agent Assistant
 
