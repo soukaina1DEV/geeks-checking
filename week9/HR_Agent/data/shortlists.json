@@ -1,34 +1,38 @@
-{
-  "FE-Intern-A": [
-    {
-      "firstName": "Amina",
-      "lastName": "El Idrissi",
-      "email": "amina@example.com",
-      "location": "Casablanca",
-      "experienceYears": 1,
-      "skills": [
-        "React",
-        "JS",
-        "HTML"
-      ],
-      "availabilityDate": "2025-10-01",
-      "stage": "SOURCED",
-      "notes": "Portfolio: aminadev.com"
-    },
-    {
-      "firstName": "Lina",
-      "lastName": "Mouline",
-      "email": "lina@example.com",
-      "location": "Casablanca",
-      "experienceYears": 1,
-      "skills": [
-        "React",
-        "Git",
-        "HTML"
-      ],
-      "availabilityDate": "2025-09-28",
-      "stage": "SCREEN",
-      "notes": "Frontend passion"
-    }
-  ]
-}
+[
+  {
+    "name": "FE-Intern-A",
+    "createdAt": "2025-09-22T14:40:24.251844",
+    "candidates": [
+      {
+        "firstName": "Amina",
+        "lastName": "El Idrissi",
+        "email": "amina@example.com",
+        "location": "Casablanca",
+        "experienceYears": 1,
+        "skills": [
+          "React",
+          "JS",
+          "HTML"
+        ],
+        "availabilityDate": "2025-10-01",
+        "stage": "SOURCED",
+        "notes": "Portfolio: aminadev.com"
+      },
+      {
+        "firstName": "Sara",
+        "lastName": "Haddad",
+        "email": "sara@example.com",
+        "location": "Rabat",
+        "experienceYears": 0,
+        "skills": [
+          "React",
+          "CSS",
+          "JS"
+        ],
+        "availabilityDate": "2025-09-25",
+        "stage": "INTERVIEW",
+        "notes": "Strong academic background"
+      }
+    ]
+  }
+]

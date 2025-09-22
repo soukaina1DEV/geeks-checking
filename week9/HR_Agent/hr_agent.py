@@ -1,257 +1,320 @@
-import re
 import json
+import re
 import os
-from datetime import datetime, timedelta
+import requests
+from datetime import datetime
+from pathlib import Path
 from collections import Counter
+from dotenv import load_dotenv
 
-# ========== Utils for Shortlists ==========
-def save_shortlist(shortlists, name, results, candidate_indices, filename=None):
-    if filename is None:
-        filename = os.path.join(os.path.dirname(__file__), "data", "shortlists.json")
+# ---------- Environment Setup ----------
+load_dotenv()
+API_KEY = os.getenv("GITHUB_API_Key")
+BASE_URL = os.getenv("BASE_URL")  
+MODEL = os.getenv("MODEL")       
 
-    selected = [results[i-1]["candidate"] for i in candidate_indices if 0 < i <= len(results)]
-    shortlists[name] = selected
+# ---------- File Paths ----------
+DATA_DIR = Path("data")
+CAND_FILE = DATA_DIR / "candidates.json"
+jobs_FILE = DATA_DIR / "positions.json"
+SHORT_FILE = DATA_DIR / "shortlists.json"
 
-    with open(filename, "w", encoding="utf-8") as f:
-        json.dump(shortlists, f, indent=2, ensure_ascii=False)
+# ---------- Helpers ----------
+def load_json(path):
+    """Load JSON data from file, return [] if file does not exist."""
+    if not path.exists():
+        return []
+    with open(path, "r", encoding="utf-8") as f:
+        return json.load(f)
 
-    return shortlists
+def save_json(path, data):
+    """Save data to a JSON file with pretty formatting."""
+    with open(path, "w", encoding="utf-8") as f:
+        json.dump(data, f, ensure_ascii=False, indent=2)
 
+def parse_date(s):
+    """Convert string (YYYY-MM-DD) to datetime.date."""
+    return datetime.strptime(s, "%Y-%m-%d").date()
 
-def load_shortlists(filename=None):
-    if filename is None:
-        filename = os.path.join(os.path.dirname(__file__), "data", "shortlists.json")
-
-    if os.path.exists(filename) and os.path.getsize(filename) > 0:
-        with open(filename, "r", encoding="utf-8") as f:
-            return json.load(f)
-    return {}
-
-# ========== Parsing Query ==========
-def parse_query(text):
-    text = text.lower()
-    filters = {
-        "role": None,
-        "skills": [],
-        "location": None,
-        "minExp": None,
-        "maxExp": None,
-        "availabilityWindowDays": None
+# ---------- AI Command Understanding ----------
+def ai_understand(cmd):
+    """
+    Send user input to GitHub AI model and extract intent + details.
+    Fallback if API fails or input is invalid.
+    """
+    headers = {
+        "Authorization": f"Bearer {API_KEY}",
+        "X-Requested-With": "python",
+        "Content-Type": "application/json",
     }
 
-    if "intern" in text:
-        filters["role"] = "intern"
+    payload = {
+        "model": MODEL,
+        "messages": [
+            {"role": "system", "content": "You are a helpful HR assistant that outputs only JSON."},
+            {"role": "user", "content": f"""
+                Extract intent and details from: {cmd}.
+                JSON format:
+                {{
+                  "intent": "search|choose|show|email|analytics|exit|help",
+                  "skills": ["React","Python"],
+                  "location": "Casablanca",
+                  "minExp": 0,
+                  "maxExp": 2,
+                  "topN": 5,
+                  "shortlistName": "FE-Intern-A",
+                  "indices": [1,3],
+                  "jobTitle": "Frontend Intern"
+                }}
+                If you cannot understand the input, return:
+                {{ "intent": "fallback", "message": "Sorry, I can't do this right now." }}
+            """}
+        ],
+        "temperature": 0
+    }
 
-    match_loc = re.search(r"in (\w+)", text)
-    if match_loc:
-        filters["location"] = match_loc.group(1).capitalize()
+    try:
+        response = requests.post(f"{BASE_URL}/chat/completions", headers=headers, json=payload, timeout=10)
+        response.raise_for_status()
+        data = response.json()
+        content = data["choices"][0]["message"]["content"]
 
-    match_exp = re.search(r"(\d+)[-–](\d+)\s*year", text)
-    if match_exp:
-        filters["minExp"] = int(match_exp.group(1))
-        filters["maxExp"] = int(match_exp.group(2))
+        # Remove Markdown code block if present
+        if content.startswith("```"):
+            content = "\n".join(content.split("\n")[1:-1])
 
-    if "this month" in text:
-        filters["availabilityWindowDays"] = 30
-    elif "next" in text and "days" in text:
-        match_days = re.search(r"next (\d+)\s*days", text)
-        if match_days:
-            filters["availabilityWindowDays"] = int(match_days.group(1))
+        result = json.loads(content)
 
-    skills_list = ["react", "js", "python", "sql", "git", "html", "css"]
-    for skill in skills_list:
-        if skill in text:
-            filters["skills"].append(skill.capitalize())
+        # Ensure fallback if intent is missing or invalid
+        if "intent" not in result or not result["intent"]:
+            return {"intent": "fallback", "message": "Sorry, I can't do this right now."}
 
-    return filters
+        return result
 
-# ========== Search Candidates ==========
-def search_candidates(filters, candidates, top_n=5):
-    results = []
-    for cand in candidates:
-        score = 0
-        reasons = []
+    except (requests.exceptions.RequestException, json.JSONDecodeError):
+        return {"intent": "fallback", "message": "Sorry, I can't do this right now."}
 
-        matched_skills = set(s.lower() for s in cand["skills"]) & set(s.lower() for s in filters["skills"])
-        if matched_skills:
-            pts = len(matched_skills) * 2
-            score += pts
-            reasons.append(f"{'+'.join(matched_skills)} match (+{pts})")
+# ---------- Candidate Scoring ----------
+def score_candidate(candidate, filters):
+    score = 0
+    reasons = []
 
-        if filters["location"] and cand["location"].lower() == filters["location"].lower():
+    # Skill matching
+    req_skills = filters.get("skills", [])
+    skill_matches = 0
+    for s in req_skills:
+        if s.lower() in [cs.lower() for cs in candidate.get("skills", [])]:
+            skill_matches += 1
+    score += 2 * skill_matches
+    if skill_matches:
+        reasons.append(f"{'+'.join(req_skills)} match (+{2*skill_matches})")
+
+    # Location match
+    if filters.get("location") and candidate.get("location","").lower() == filters["location"].lower():
+        score += 1
+        reasons.append(f"{candidate['location']} (+1)")
+
+    # Experience range match
+    minExp = filters.get("minExp")
+    maxExp = filters.get("maxExp")
+    if minExp is not None and maxExp is not None:
+        exp = candidate.get("experienceYears", 0)
+        if minExp <= exp <= maxExp:
             score += 1
-            reasons.append(f"{cand['location']} (+1)")
+            reasons.append(f"{exp}y fits (+1)")
 
-        if filters["minExp"] is not None and filters["maxExp"] is not None:
-            minE, maxE = filters["minExp"], filters["maxExp"]
-            if minE - 1 <= cand["experienceYears"] <= maxE + 1:
-                score += 1
-                reasons.append(f"{cand['experienceYears']}y fits (±1) (+1)")
+    return score, " , ".join(reasons)
 
-        if filters["availabilityWindowDays"]:
-            avail_date = datetime.strptime(cand["availabilityDate"], "%Y-%m-%d")
-            limit_date = datetime.today() + timedelta(days=filters["availabilityWindowDays"])
-            if avail_date <= limit_date:
-                score += 1
-                reasons.append(f"available by {cand['availabilityDate']} (+1)")
+# ---------- Candidate Search ----------
+def search_candidates(filters, candidates):
+    scored = []
+    for idx, c in enumerate(candidates, start=1):
+        sc, reason = score_candidate(c, filters)
+        scored.append({"index": idx, "candidate": c, "score": sc, "reason": reason if reason else "no matches"})
+    scored_sorted = sorted(scored, key=lambda x: x["score"], reverse=True)
+    topN = filters.get("topN", 5)
+    return scored_sorted[:topN]
 
-        results.append({
-            "candidate": cand,
-            "score": score,
-            "reason": ", ".join(reasons)
-        })
+# ---------- Shortlists ----------
+def load_shortlists():
+    return load_json(SHORT_FILE)
 
-    results.sort(key=lambda x: x["score"], reverse=True)
-    return results[:top_n]
-
-# ========== Draft Email ==========
-def draft_email(recipients, job, tone="friendly"):
-    subject = f"{job['title']} Opportunity at Our Company"
-    greetings = []
-    for cand in recipients:
-        greetings.append(f"Hi {cand['firstName']},\nWe reviewed your background and think you'd be a great fit for {job['title']} in {job['location']}.\nLet us know if you're interested!")
-    text = "\n".join(greetings) + "\nBest regards,\nHR Team"
-    return {"subject": subject, "text": text}
-
-def edit_email(email, new_subject=None, new_closing=None):
-    if new_subject:
-        email["subject"] = new_subject
-    if new_closing:
-        lines = email["text"].split("\n")
-        if len(lines) >= 2:
-            lines = lines[:-2]   # نحذف آخر جوج أسطر (closing القديم)
-        lines.append(new_closing)
-        email["text"] = "\n".join(lines)
-    return email
-
-def html_template(email):
-    return f"""
-    <html>
-    <body style="font-family:Arial, sans-serif; line-height:1.5; color:#333;">
-        <h3 style="color:#2c3e50;">{email['subject']}</h3>
-        <p>{email['text'].replace("\n", "<br>")}</p>
-    </body>
-    </html>
-    """
-
-# ========== Analytics ==========
-def analytics_summary(candidates):
-    stages = Counter(c["stage"] for c in candidates)
-    skills = Counter(s for c in candidates for s in c["skills"])
-    top_skills = skills.most_common(3)
-    return {"countByStage": dict(stages), "topSkills": top_skills}
-
-# ========== Helpers ==========
-def show_help():
-    print("Examples:")
-    print("find 5 React interns in Casablanca, 0–2 years, available this month")
-    print("save #1 #2 as \"FE-Intern-A\"")
-    print("draft email for \"FE-Intern-A\" job \"Frontend Intern\" tone friendly")
-    print("edit subject \"New subject here\" for last email")
-    print("edit closing \"New closing here\" for last email")
-    print("list shortlists")
-    print("show shortlist \"FE-Intern-A\"")
-    print("show analytics")
-    print("quit")
-
-# ========== MAIN CLI ==========
-if __name__ == "__main__":
-    with open("data/candidates.json", "r", encoding="utf-8") as f:
-        candidates = json.load(f)
-    with open("data/jobs.json", "r", encoding="utf-8") as f:
-        jobs = json.load(f)
-
+def save_shortlist(name, indices, candidates):
     shortlists = load_shortlists()
-    results = []
-    email = None
+    sel = [candidates[i-1] for i in indices if 1 <= i <= len(candidates)]
+    entry = {"name": name, "createdAt": datetime.now().isoformat(), "candidates": sel}
+    shortlists.append(entry)
+    save_json(SHORT_FILE, shortlists)
+    return True
 
-    print("HR Agent CLI ready. Type 'help' for commands.")
+# ---------- Email Drafting ----------
+def draft_email(recipient, job_title, closing="Best regards,\nRecruitment Team"):
+    subject = f"{job_title} Interview Invitation"
+    intro = f"Dear {recipient.get('firstName','')},"
+    text = f"""{intro}
+
+We are pleased to inform you that you have been shortlisted for an interview for the {job_title} position.
+
+Please let us know your availability for a 30-minute interview this week.
+
+{closing}
+"""
+    return {"subject": subject, "text": text, "to": recipient["email"]}
+
+def html_template(email_obj):
+    subject = email_obj["subject"]
+    text = email_obj["text"].replace("\n", "<br>")
+    return f"""<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8"/>
+    <title>{subject}</title>
+  </head>
+  <body style="font-family: Arial, sans-serif; line-height:1.4;">
+    <div style="max-width:600px; padding:16px; border:1px solid #ddd; border-radius:8px;">
+      <h2 style="margin-top:0;">{subject}</h2>
+      <div>{text}</div>
+    </div>
+  </body>
+</html>"""
+
+# ---------- Analytics ----------
+def analytics_summary(candidates):
+    countByStage = Counter([c.get("stage","UNKNOWN") for c in candidates])
+    skills = Counter()
+    for c in candidates:
+        for s in c.get("skills", []):
+            skills[s] += 1
+    topSkills = skills.most_common(3)
+    return {"countByStage": dict(countByStage), "topSkills": topSkills}
+
+# ---------- CLI Display ----------
+def print_candidate_short(cobj):
+    c = cobj["candidate"]
+    print(f"#{cobj['index']:02d} {c['firstName']} {c['lastName']} — {c['email']} — {c['location']} — {c['experienceYears']}y — score {cobj['score']} — {cobj['reason']}")
+
+# ---------- Main Loop ----------
+def main_loop():
+    DATA_DIR.mkdir(exist_ok=True)
+    candidates = load_json(CAND_FILE)
+    positions = load_json(jobs_FILE)
+
+    print("🤖 AI HR Agent: Hello! How can I help you?")
+    last_search = []
 
     while True:
-        raw_command = input("\n>> ").strip()
-        command = raw_command.lower()
+        cmd = input("\n> ").strip()
+        if not cmd:
+            continue
 
-        if command.startswith("find"):
-            filters = parse_query(raw_command)
-            results = search_candidates(filters, candidates)
-            print("\n=== Search Results ===")
-            for i, r in enumerate(results, 1):
-                cand = r["candidate"]
-                print(f"#{i}: {cand['firstName']} {cand['lastName']} → Score {r['score']} | {r['reason']}")
+        ai_cmd = ai_understand(cmd)
+        intent = ai_cmd.get("intent","fallback").lower()
 
-        elif command.startswith("save"):
-            match = re.search(r'save #([\d\s#]+) as "(.+)"', raw_command, re.IGNORECASE)
-            if match:
-                indices = [int(x.strip("#")) for x in match.group(1).split() if x.strip("#").isdigit()]
-                name = match.group(2)
-                shortlists = save_shortlist(shortlists, name, results, indices)
-                print(f"\nShortlist saved: ['{name}']")
+        # Fallback
+        if intent == "fallback":
+            print(f"🤖 AI HR Agent: {ai_cmd.get('message','Sorry, I can\'t do this right now.')}")
+            continue
 
-        elif command == "list shortlists":
-            print("\n=== Shortlists ===")
-            for name, cands in shortlists.items():
-                print(f"- {name} ({len(cands)} candidates)")
 
-        elif command.startswith("show shortlist"):
-            match = re.search(r'show shortlist "?(.+?)"?$', raw_command, re.IGNORECASE)
-            if match:
-                name = match.group(1)
-                if name in shortlists:
-                    cands = shortlists[name]
-                    print(f"\nShortlist '{name}' ({len(cands)}):")
-                    for i, cand in enumerate(cands):
-                        skills_str = ", ".join(cand["skills"])
-                        print(f"#{i} {cand['firstName']} {cand['lastName']} | {cand['location']} | {cand['experienceYears']}y | skills: {skills_str}")
-                else:
-                    print("Shortlist not found.")
+        # Search
+        if intent == "search":
+            results = search_candidates(ai_cmd, candidates)
+            last_search = results
+            print(f"Found top {len(results)} results:")
+            for r in results:
+                print_candidate_short(r)
 
-        elif command.startswith("draft"):
-            match = re.search(r'draft email for "(.+)" job "(.+)" tone (\w+)', raw_command, re.IGNORECASE)
-            if match:
-                shortlist_name = match.group(1)
-                job_title = match.group(2)
-                tone = match.group(3)
-                recipients = shortlists.get(shortlist_name, [])
-                job = next((j for j in jobs if j["title"].lower() == job_title.lower()), None)
-                if recipients and job:
-                    email = draft_email(recipients, job, tone)
-                    print("\n=== Email Preview ===")
-                    print("Subject:", email["subject"])
-                    print("\nPlain text:\n", email["text"])
-                    print("\nHTML Preview:\n", html_template(email))
+        # Choose
+        elif intent == "choose":
+            idxs = ai_cmd.get("indices", [])
+            name = ai_cmd.get("shortlistName", "Unnamed")
+            save_shortlist(name, idxs, [r["candidate"] for r in last_search])
+            print(f"Shortlist '{name}' saved with {len(idxs)} candidates.")
 
-        elif command.startswith("edit subject"):
-            match = re.search(r'edit subject "(.+)" for last email', raw_command, re.IGNORECASE)
-            if match and email:
-                new_subject = match.group(1)
-                email = edit_email(email, new_subject=new_subject)
-                print("\n=== Updated Email Preview ===")
-                print("Subject:", email["subject"])
-                print("\nPlain text:\n", email["text"])
-                print("\nHTML Preview:\n", html_template(email))
+        # Show
+        elif intent == "show":
+            name = ai_cmd.get("shortlistName", "")
+            shortlists = load_shortlists()
 
-        elif command.startswith("edit closing"):
-            match = re.search(r'edit closing "(.+)" for last email', raw_command, re.IGNORECASE)
-            if match and email:
-                new_closing = match.group(1)
-                email = edit_email(email, new_closing=new_closing)
-                print("\n=== Updated Email Preview ===")
-                print("Subject:", email["subject"])
-                print("\nPlain text:\n", email["text"])
-                print("\nHTML Preview:\n", html_template(email))
+            if name.lower() in ["", "all"]:
+                if not shortlists:
+                    print("No shortlists found.")
+                    continue
+                for s in shortlists:
+                    print(f"\nShortlist: {s['name']} (created: {s['createdAt']})")
+                    for idx, c in enumerate(s["candidates"], start=1):
+                        print(f"  #{idx} {c['firstName']} {c['lastName']} — {c['email']} — {c['location']} — {c['experienceYears']}y")
+                continue
 
-        elif command == "show analytics":
-            stats = analytics_summary(candidates)
-            print("\n=== Analytics ===")
-            print("Pipeline by stage:", stats["countByStage"])
-            print("Top skills:", stats["topSkills"])
+            matches = [s for s in shortlists if s["name"].lower() == name.lower()]
+            if not matches:
+                print("Shortlist not found.")
+                continue
+            print(f"Candidates in '{name}':")
+            for idx, c in enumerate(matches[0]["candidates"], start=1):
+                print(f"#{idx} {c['firstName']} {c['lastName']} — {c['email']} — {c['location']} — {c['experienceYears']}y")
 
-        elif command == "quit":
-            print("Exiting HR Agent CLI...")
+        # Email
+        elif intent == "email":
+            job_title = ai_cmd.get("jobTitle", "Job")
+            sl_name = ai_cmd.get("shortlistName", None)
+            shortlists = load_shortlists()
+            if not shortlists:
+                print("No shortlists found to send email.")
+                continue
+            if sl_name:
+                matches = [s for s in shortlists if s["name"].lower() == sl_name.lower()]
+                if not matches:
+                    print(f"Shortlist '{sl_name}' not found.")
+                    continue
+                recipients = matches[0]["candidates"]
+                sl_name = matches[0]["name"]
+            else:
+                recipients = shortlists[-1]["candidates"]
+                sl_name = shortlists[-1]["name"]
+
+            print(f"\nSending individual emails for shortlist '{sl_name}':")
+            for person in recipients:
+                email_obj = draft_email(person, job_title)
+                print("\n--- SUBJECT ---")
+                print(email_obj["subject"])
+                print("\n--- TO ---")
+                print(email_obj["to"])
+                print("\n--- PLAINTEXT ---")
+                print(email_obj["text"])
+                print("\n--- HTML PREVIEW ---")
+                print(html_template(email_obj))
+                print("-"*40)
+
+        # Analytics
+        elif intent == "analytics":
+            summary = analytics_summary(candidates)
+            print("Pipeline by stage:")
+            for k,v in summary["countByStage"].items():
+                print(f"  {k} = {v}")
+            print("Top skills:")
+            for s,cnt in summary["topSkills"]:
+                print(f"  {s} ({cnt})")
+
+        # Exit
+        elif intent in ["exit","quit"]:
+            print("Bye!")
             break
 
-        elif command in ["help", "?", "h"]:
-            show_help()
+        # Help
+        elif intent == "help":
+            print("""
+Available commands (in natural language):
+- "Find me React developers in Casablanca"
+- "Choose 1 3 as FE-Intern-A"
+- "Show shortlist FE-Intern-A" or "Show all"
+- "Send email using Frontend Intern from FE-Intern-A"
+- "Give me analytics"
+- "Exit"
+""")
 
         else:
-            print("Unknown command. Type 'help' to see options.")
+            print("🤖 AI HR Agent: Sorry, I can't do this right now.")
+
+if __name__== "__main__":
+    main_loop()
