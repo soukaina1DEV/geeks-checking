@@ -1,0 +1,2 @@
+This is the content of file-data.txt 📄
+Node.js makes file handling easy!
