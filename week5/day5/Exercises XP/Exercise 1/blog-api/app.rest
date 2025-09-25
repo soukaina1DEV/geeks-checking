@@ -1,0 +1,30 @@
+### Get Posts
+GET http://localhost:3000/posts
+Accept: application/json
+
+
+### Get Post by ID
+GET http://localhost:3000/posts/1
+Accept: application/json
+
+### Create Post
+POST http://localhost:3000/posts
+Content-Type: application/json
+
+{
+    "title": "Third Post",
+    "content": "This is the content of the third post."
+}
+
+### Update Post
+PUT http://localhost:3000/posts/1
+Content-Type: application/json
+
+{
+    "title": "Updated Post",
+    "content": "This is the updated content of the post."
+}
+
+### Delete Post
+DELETE http://localhost:3000/posts/1   
+Accept: application/json
