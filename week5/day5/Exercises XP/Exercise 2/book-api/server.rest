@@ -1,0 +1,17 @@
+### get /books 
+GET http://localhost:5000/api/books
+
+
+### get /books/:id
+GET http://localhost:5000/api/books/1
+
+
+### post /books
+POST http://localhost:5000/api/books
+Content-Type: application/json
+
+{
+    "title": "New book",
+    "author": "Author Three",
+    "publishedYear": 2024
+}
