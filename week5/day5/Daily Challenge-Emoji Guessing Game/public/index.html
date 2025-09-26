@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Emoji Guessing Game</title>
+  <style>
+    body { font-family: Arial, sans-serif; max-width:680px;margin:40px auto;padding:0 16px; }
+    button{ margin:6px; padding:8px 12px; font-size:16px; }
+    #emoji{ font-size:64px; margin:20px 0; }
+    #leaderboard li{ margin-bottom:6px; }
+  </style>
+</head>
+<body>
+  <h1>Emoji  Game</h1>
+
+  <div id="playerPrompt">
+    <label>Your name: <input id="playerName" placeholder="Your name" /></label>
+    <button id="startBtn">Start Game</button>
+  </div>
+
+  <div id="game" style="display:none;">
+    <div id="emoji">?</div>
+    <div id="options"></div>
+    <p id="feedback"></p>
+    <p>Score: <span id="score">0</span></p>
+    <button id="quitBtn">Submit</button>
+  </div>
+
+  <h3> Leaderboard</h3>
+  <ul id="leaderboard"></ul>
+<script>
+  let player = null;
+  let score = 0;
+  let currentCorrectName = null;
+  const startBtn = document.getElementById('startBtn');
+  const playerNameInput = document.getElementById('playerName');
+  const gameDiv = document.getElementById('game');
+  const emojiEl = document.getElementById('emoji');
+  const optionsEl = document.getElementById('options');
+  const feedbackEl = document.getElementById('feedback');
+  const scoreEl = document.getElementById('score');
+  const quitBtn = document.getElementById('quitBtn');
+  const leaderboardEl = document.getElementById('leaderboard');
+  startBtn.addEventListener('click', () => {
+    player = (playerNameInput.value || 'Anonymous').trim();
+    document.getElementById('playerPrompt').style.display = 'none';
+    gameDiv.style.display = 'block';
+    score = 0;
+    scoreEl.textContent = score;
+    loadQuestion();
+    fetchLeaderboard();
+  });
+  async function loadQuestion() {
+    feedbackEl.textContent = '';
+    optionsEl.innerHTML = 'Loading...';
+    try {
+      const res = await fetch('/game');
+      const data = await res.json();
+      emojiEl.textContent = data.emoji;
+      optionsEl.innerHTML = '';
+      if (data.options && data.options.length) {
+        currentCorrectName = data.correct || data.options[0];
+        data.options.forEach(opt => {
+          const btn = document.createElement('button');
+          btn.type = 'button';
+          btn.textContent = opt;
+          btn.onclick = () => checkAnswer(opt);
+          optionsEl.appendChild(btn);
+        });
+      } else {
+        optionsEl.textContent = 'No options returned from server.';
+      }
+    } catch (err) {
+      optionsEl.textContent = 'Error loading question';
+      console.error(err);
+    }
+  }
+  function checkAnswer(choice) {
+    if (choice === currentCorrectName) {
+      score++;
+      feedbackEl.textContent = '✅ Correct!';
+    } else {
+      feedbackEl.textContent = `❌ Wrong! Correct answer: ${currentCorrectName}`;
+    }
+    scoreEl.textContent = score;
+    setTimeout(loadQuestion, 900);
+  }
+
+  async function fetchLeaderboard() {
+    try {
+      const res = await fetch('/leaderboard');
+      const data = await res.json();
+      leaderboardEl.innerHTML = '';
+      data.forEach(entry => {
+        const li = document.createElement('li');
+        li.textContent = `${entry.player} — ${entry.score}`;
+        leaderboardEl.appendChild(li);
+      });
+    } catch (e) {
+      console.error(e);
+    }
+  }
+  async function submitScore() {
+    try {
+      await fetch('/submit', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ player, score })
+      });
+    } catch (e) {
+      console.error(e);
+    }
+  }
+  quitBtn.addEventListener('click', async () => {
+    await submitScore();
+    await fetchLeaderboard();
+    gameDiv.style.display = 'none';
+    document.getElementById('playerPrompt').style.display = 'block';
+  });
+  setInterval(fetchLeaderboard, 10000);
+</script>
+</body>
+</html>
