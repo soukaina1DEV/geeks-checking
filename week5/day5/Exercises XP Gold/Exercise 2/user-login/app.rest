@@ -1,0 +1,22 @@
+POST http://localhost:5000/api/register
+Content-Type: application/json
+
+{
+  "username": "soukaina",
+  "password": "mypassword123"
+}
+
+
+### User Login
+POST http://localhost:5000/api/login
+Content-Type: application/json
+
+{
+  "username": "soukaina",
+  "password": "mypassword123"
+}
+
+
+### Get User Profile (Protected Route)
+GET http://localhost:5000/api/profile
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwidXNlcm5hbWUiOiJzb3VrYWluYSIsImlhdCI6MTc1OTAwOTk2NiwiZXhwIjoxNzU5MDEzNTY2fQ.Sq1Swwh-uOs6eE_e9ID5i50xgn3hD_A3htGB6MqU5xw
