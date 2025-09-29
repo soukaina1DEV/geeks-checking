@@ -1,0 +1,44 @@
+### Register a new user
+POST http://localhost:5000/api/register
+Content-Type: application/json
+
+{
+  "email": "test@example.com",
+  "username": "testuser",
+  "first_name": "John",
+  "last_name": "Doe",
+  "password": "Password123"
+}
+
+###
+
+### Login with the user
+POST http://localhost:5000/api/login
+Content-Type: application/json
+
+{
+  "username": "testuser",
+  "password": "Password123"
+}
+
+###
+
+### Get all users
+GET http://localhost:5000/api/users
+
+###
+
+### Get user by ID
+GET http://localhost:5000/api/users/1
+
+###
+
+### Update user by ID
+PUT http://localhost:5000/api/users/1
+Content-Type: application/json
+
+{
+  "email": "newmail@example.com",
+  "first_name": "Johnny",
+  "last_name": "Updated"
+}

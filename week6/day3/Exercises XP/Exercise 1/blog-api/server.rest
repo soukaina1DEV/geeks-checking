@@ -1,0 +1,33 @@
+### Get all posts
+GET http://localhost:3000/posts
+Content-Type: application/json
+
+
+### Get a single post by ID
+GET http://localhost:3000/posts/1
+Content-Type: application/json
+
+
+### Create a new post
+POST http://localhost:3000/posts
+Content-Type: application/json
+
+{
+  "title": "New Post from REST Client",
+  "content": "This is a post created using server.rest file."
+}
+
+
+### Update a post by ID
+PUT http://localhost:3000/posts/1
+Content-Type: application/json
+
+{
+  "title": "Updated Title",
+  "content": "This content has been updated using REST Client."
+}
+
+
+### Delete a post by ID
+DELETE http://localhost:3000/posts/1
+Content-Type: application/json

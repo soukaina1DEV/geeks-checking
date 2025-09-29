@@ -1,0 +1,15 @@
+### Get all books
+GET http://localhost:5000/api/books
+
+### Get one book
+GET http://localhost:5000/api/books/1
+
+### Create new book
+POST http://localhost:5000/api/books
+Content-Type: application/json
+
+{
+  "title": "New Book",
+  "author": "New Author",
+  "publishedYear": 2022
+}
