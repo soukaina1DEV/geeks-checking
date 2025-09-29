@@ -1,6 +1,0 @@
-### GET /
-http://localhost:3000/
-
-
-### GET /about
-http://localhost:3000/about
