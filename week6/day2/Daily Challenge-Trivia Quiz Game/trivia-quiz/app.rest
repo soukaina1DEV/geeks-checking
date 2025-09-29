@@ -1,0 +1,13 @@
+GET http://localhost:3000/quiz
+Accept: application/json
+
+### Request
+POST http://localhost:3000/quiz
+Content-Type: application/json
+
+{ "answer": "RED whale" }
+
+
+### Request
+GET http://localhost:3000/quiz/score
+Accept: application/json
