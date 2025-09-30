@@ -1,0 +1,66 @@
+### Register a new user
+POST http://localhost:5000/api/users/register
+Content-Type: application/json
+
+{
+  "firstName": "John",
+  "lastName": "Doe",
+  "email": "john@gmail.com",
+  "username": "johnny",
+  "password": "123456"
+}
+
+### Try registering with the same username (should fail)
+POST http://localhost:5000/api/users/register
+Content-Type: application/json
+
+{
+  "firstName": "John",
+  "lastName": "Doe",
+  "email": "john@gmail.com",
+  "username": "johnny",
+  "password": "123456"
+}
+
+### Login with correct credentials
+POST http://localhost:5000/api/users/login
+Content-Type: application/json
+
+{
+  "username": "johnny",
+  "password": "123456"
+}
+
+### Login with wrong username
+POST http://localhost:5000/api/users/login
+Content-Type: application/json
+
+{
+  "username": "johnny2",
+  "password": "123456"
+}
+
+### Login with wrong password
+POST http://localhost:5000/api/users/login
+Content-Type: application/json
+
+{
+  "username": "johnny",
+  "password": "wrongpass"
+}
+
+### Get all users
+GET http://localhost:5000/api/users
+
+### Get user by ID
+GET http://localhost:5000/api/users/1
+
+### Update user by ID
+PUT http://localhost:5000/api/users/1
+Content-Type: application/json
+
+{
+  "firstName": "Johnny",
+  "lastName": "Updated",
+  "email": "johnny.updated@gmail.com"
+}
