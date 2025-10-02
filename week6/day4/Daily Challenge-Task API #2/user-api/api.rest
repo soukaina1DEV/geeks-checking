@@ -1,0 +1,38 @@
+###  Register User
+POST http://localhost:3000/register
+Content-Type: application/json
+
+{
+  "firstName": "Soukaina",
+  "lastName": "Elfajjaj",
+  "email": "soukaina@example.com",
+  "username": "soukaina123",
+  "password": "mypassword"
+}
+
+###  Login User
+POST http://localhost:3000/login
+Content-Type: application/json
+
+{
+  "username": "soukaina123",
+  "password": "mypassword"
+}
+
+###  Get all users
+GET http://localhost:3000/users
+
+###  Get user by ID
+GET http://localhost:3000/users/1
+
+###  Update user by ID
+PUT http://localhost:3000/users/1
+Content-Type: application/json
+
+{
+  "firstName": "Updated",
+  "lastName": "Name",
+  "email": "updated@example.com",
+  "username": "soukaina123",
+  "password": "newpassword"
+}

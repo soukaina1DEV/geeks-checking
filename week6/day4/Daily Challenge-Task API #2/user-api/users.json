@@ -1,10 +1,18 @@
 [
   {
     "id": 1,
-    "firstName": "Johnny",
-    "lastName": "Updated",
-    "email": "johnny.updated@gmail.com",
-    "username": "johnny",
-    "password": "$2b$10$nG5BJhaweSC5tB02UNnuUuw/Ub1Qqf3IKBarSxgx13uW5fCuNayPO"
+    "firstName": "Updated",
+    "lastName": "Name",
+    "email": "updated@example.com",
+    "username": "soukaina123",
+    "password": "$2b$10$33H8MCtGbZ7KUxI40DkKKuKSL6a4LBU63wmvYhavy8tc1A6S1Qr5q"
+  },
+  {
+    "id": 2,
+    "firstName": "soukaina",
+    "lastName": "el fajjaj",
+    "email": "soukaina.elfajjaj123@gmail.com",
+    "username": "soukaina",
+    "password": "$2b$10$9d1C5T/9C4SA8FnjrCfesuiR.CJcrY4QhhhbcJu0DNC7An2g811E."
   }
 ]

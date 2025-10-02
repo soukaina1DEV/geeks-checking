@@ -1,29 +1,23 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+  <meta charset="UTF-8" />
   <title>Login</title>
 </head>
 <body>
-  <h1>Login :</h1>
-  <form id="loginForm">
+  <h2>Login</h2>
+  <form id="loginForm" method="POST" action="/login">
     <input type="text" name="username" placeholder="Username" required><br>
     <input type="password" name="password" placeholder="Password" required><br>
-    <button type="submit">Login</button>
+    <button type="submit" id="loginBtn" disabled>Login</button>
   </form>
-  <p id="message"></p>
 
   <script>
     const form = document.getElementById("loginForm");
-    form.addEventListener("submit", async (e) => {
-      e.preventDefault();
-      const data = Object.fromEntries(new FormData(form).entries());
-      const res = await fetch("/api/users/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data)
-      });
-      const result = await res.json();
-      document.getElementById("message").textContent = result.error || result.message;
+    const loginBtn = document.getElementById("loginBtn");
+
+    form.addEventListener("input", () => {
+      loginBtn.disabled = !form.checkValidity();
     });
   </script>
 </body>

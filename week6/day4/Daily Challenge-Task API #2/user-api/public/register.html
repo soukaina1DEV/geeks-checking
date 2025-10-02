@@ -1,32 +1,26 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+  <meta charset="UTF-8" />
   <title>Register</title>
 </head>
 <body>
-  <h1>Register :</h1>
-  <form id="registerForm" methode = "POST">
-    <input type="text" name="firstName" placeholder="First name" required><br>
-    <input type="text" name="lastName" placeholder="Last name" required><br>
+  <h2>Register</h2>
+  <form id="registerForm" method="POST" action="/register">
+    <input type="text" name="firstName" placeholder="First Name" required><br>
+    <input type="text" name="lastName" placeholder="Last Name" required><br>
     <input type="email" name="email" placeholder="Email" required><br>
     <input type="text" name="username" placeholder="Username" required><br>
     <input type="password" name="password" placeholder="Password" required><br>
-    <button type="submit">Register</button>
+    <button type="submit" id="submitBtn" disabled>Register</button>
   </form>
-  <p id="message"></p>
 
   <script>
     const form = document.getElementById("registerForm");
-    form.addEventListener("submit", async (e) => {
-      e.preventDefault();
-      const data = Object.fromEntries(new FormData(form).entries());
-      const res = await fetch("/api/users/register", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data)
-      });
-      const result = await res.json();
-      document.getElementById("message").textContent = result.error || result.message;
+    const submitBtn = document.getElementById("submitBtn");
+
+    form.addEventListener("input", () => {
+      submitBtn.disabled = !form.checkValidity();
     });
   </script>
 </body>
