@@ -1,21 +1,18 @@
-let books = [
-  { id: 1, title: "Book One", author: "Author One", publishedYear: 2020 },
-  { id: 2, title: "Book Two", author: "Author Two", publishedYear: 2021 },
-];
+const db = require("../config/db");
 
-const getAllBooks = () => books;
+const getAllBooks = () => {
+  return db("books").select("*").orderBy("id", "asc");
+};
 
-const getBookById = (id) => books.find((b) => b.id === id);
+const getBookById = (id) => {
+  return db("books").where({ id }).first();
+};
 
-const createBook = (title, author, publishedYear) => {
-  const newBook = {
-    id: books.length + 1,
-    title,
-    author,
-    publishedYear,
-  };
-  books.push(newBook);
-  return newBook;
+const createBook = async (title, author, publishedYear) => {
+  const [row] = await db("books").insert({ title, author, publishedYear }, [
+    "*",
+  ]);
+  return row;
 };
 
 module.exports = { getAllBooks, getBookById, createBook };
