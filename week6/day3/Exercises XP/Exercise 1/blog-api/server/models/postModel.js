@@ -1,33 +1,27 @@
-const pool = require("../config/db");
+const db = require("../config/db");
 
 const getAllPosts = async () => {
-  const result = await pool.query("SELECT * FROM posts ORDER BY id ASC");
-  return result.rows;
+  return db("posts").select("*").orderBy("id", "asc");
 };
 
 const getPostById = async (id) => {
-  const result = await pool.query("SELECT * FROM posts WHERE id = $1", [id]);
-  return result.rows[0];
+  return db("posts").where({ id }).first(); // .first() = سطر واحد
 };
 
 const createPost = async (title, content) => {
-  const result = await pool.query(
-    "INSERT INTO posts (title, content) VALUES ($1, $2) RETURNING *",
-    [title, content]
-  );
-  return result.rows[0];
+  const [row] = await db("posts").insert({ title, content }, ["*"]); // returning *
+  return row;
 };
 
 const updatePost = async (id, title, content) => {
-  const result = await pool.query(
-    "UPDATE posts SET title=$1, content=$2 WHERE id=$3 RETURNING *",
-    [title, content, id]
-  );
-  return result.rows[0];
+  const [row] = await db("posts")
+    .where({ id })
+    .update({ title, content }, ["*"]);
+  return row;
 };
 
 const deletePost = async (id) => {
-  await pool.query("DELETE FROM posts WHERE id=$1", [id]);
+  return db("posts").where({ id }).del(); // كيرجع عدد الأسطر المحذوفة
 };
 
 module.exports = {

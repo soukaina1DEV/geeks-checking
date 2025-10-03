@@ -42,7 +42,8 @@ const updatePost = async (req, res, next) => {
 
 const deletePost = async (req, res, next) => {
   try {
-    await Post.deletePost(req.params.id);
+    const deleted = await Post.deletePost(req.params.id);
+    if (deleted === 0) return res.status(404).json({ error: "Post not found" });
     res.json({ message: "Post deleted successfully" });
   } catch (err) {
     next(err);
