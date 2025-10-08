@@ -1,0 +1,8 @@
+body {
+  background: linear-gradient(to bottom, #f0f8ff, #ffffff);
+  font-family: "Arial", sans-serif;
+}
+
+.carousel .slide img {
+  border-radius: 15px;
+}
