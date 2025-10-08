@@ -1,0 +1,13 @@
+body {
+  background-color: #f8f9fa;
+}
+
+header {
+  border-bottom-left-radius: 15px;
+  border-bottom-right-radius: 15px;
+}
+
+h3 {
+  color: #212529;
+  font-weight: bold;
+}
