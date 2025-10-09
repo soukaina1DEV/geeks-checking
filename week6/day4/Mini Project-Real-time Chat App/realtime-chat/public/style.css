@@ -1,0 +1,89 @@
+body {
+  font-family: Arial, sans-serif;
+  background: linear-gradient(to right, #0f172a, #1e293b);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  margin: 0;
+}
+
+#join, #chat {
+  background: #1e293b;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.4);
+  width: 400px;
+}
+
+.hidden {
+  display: none;
+}
+
+#join input {
+  width: 100%;
+  padding: 10px;
+  margin: 10px 0;
+  border: none;
+  border-radius: 6px;
+}
+
+#join button {
+  width: 100%;
+  background: #3b82f6;
+  color: white;
+  border: none;
+  padding: 10px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+#chat {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.users {
+  background: #0f172a;
+  padding: 10px;
+  border-radius: 6px;
+}
+
+#messages {
+  background: #0f172a;
+  padding: 10px;
+  height: 300px;
+  overflow-y: auto;
+  border-radius: 6px;
+  margin-bottom: 10px;
+}
+
+.msg {
+  margin: 5px 0;
+}
+
+.msg strong {
+  color: #3b82f6;
+}
+
+.inputBox {
+  display: flex;
+}
+
+.inputBox input {
+  flex: 1;
+  padding: 10px;
+  border: none;
+  border-radius: 6px 0 0 6px;
+}
+
+.inputBox button {
+  background: #10b981;
+  color: white;
+  border: none;
+  padding: 10px 15px;
+  border-radius: 0 6px 6px 0;
+  cursor: pointer;
+}
