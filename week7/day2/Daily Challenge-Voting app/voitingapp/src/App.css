@@ -1,0 +1,45 @@
+.App {
+  text-align: center;
+  margin-top: 40px;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  padding: 20px;
+  width: 400px;
+  margin: 50px auto;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+h1 {
+  font-size: 28px;
+  font-weight: bold;
+  margin-bottom: 20px;
+}
+
+.language-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #ffeac5;
+  border: 1px solid #ddd;
+  padding: 10px 20px;
+  margin: 10px 0;
+  border-radius: 5px;
+}
+
+.language-card span {
+  font-size: 18px;
+  font-weight: 500;
+}
+
+.language-card button {
+  background: none;
+  border: none;
+  color: green;
+  font-size: 18px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.language-card button:hover {
+  text-decoration: underline;
+}
