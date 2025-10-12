@@ -12,3 +12,20 @@ function App() {
 }
 
 export default App;
+
+
+
+// Exercise 2 : Form Validation
+
+import React from "react";
+import Form from "./components/Form";
+
+function App() {
+  return (
+    <div>
+      <Form />
+    </div>
+  );
+}
+
+export default App;
