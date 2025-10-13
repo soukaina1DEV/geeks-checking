@@ -1,0 +1,37 @@
+{
+  "SocialMedias": [
+    "https://github.com/",
+    "https://www.linkedin.com/",
+    "https://www.facebook.com/"
+  ],
+
+  "Skills": {
+    "ProgrammingLanguage": ["Java", "C#", "Python"],
+    "WebDevelopment": [
+      "JavaScript (ES5, ES6)",
+      "TypeScript",
+      "HTML5",
+      "CSS (SCSS/SASS)",
+      "React"
+    ]
+  },
+
+  "Experiences": [
+    {
+      "companyName": "Demo1 Technologies",
+      "logo": "https://via.placeholder.com/150?text=NO+IMAGE+AVAILABLE",
+      "position": "Full Stack Developer",
+      "startDate": "2017-01-01",
+      "location": "New York, USA",
+      "description": "Built and updated various Chrome Extensions."
+    },
+    {
+      "companyName": "Demo2 Technologies",
+      "logo": "https://via.placeholder.com/150?text=NO+IMAGE+AVAILABLE",
+      "position": "UI Designer",
+      "startDate": "2016-05-01",
+      "location": "Beijing, China",
+      "description": "Design user-friendly web page"
+    }
+  ]
+}
