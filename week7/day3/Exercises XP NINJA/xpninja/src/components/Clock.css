@@ -1,0 +1,39 @@
+.clock-container {
+  background-color: #1e1f25;
+  color: white;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  font-family: "Poppins", sans-serif;
+  overflow: hidden;
+  padding: 30px;
+}
+
+.year {
+  font-size: 1.5em;
+  align-self: flex-start;
+}
+
+.center {
+  position: relative;
+  text-align: center;
+}
+
+.center h2 {
+  font-size: 1.2em;
+  color: white;
+  animation: fade 1s infinite alternate;
+}
+
+.month {
+  font-size: 1.5em;
+  align-self: flex-end;
+}
+
+/* optional rotation animation */
+@keyframes fade {
+  from { opacity: 0.8; }
+  to { opacity: 1; }
+}
