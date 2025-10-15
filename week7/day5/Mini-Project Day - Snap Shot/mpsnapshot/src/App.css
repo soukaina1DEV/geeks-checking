@@ -1,0 +1,76 @@
+body {
+  font-family: 'Poppins', sans-serif;
+  background-color: #fff;
+  margin: 0;
+  padding: 0;
+  text-align: center;
+}
+
+.header h1 {
+  font-size: 2.5rem;
+  font-family: 'Pacifico', cursive;
+  margin-top: 30px;
+  color: #001f3f;
+}
+
+.search-form {
+  margin: 20px;
+}
+
+.search-form input {
+  padding: 8px;
+  width: 200px;
+  border-radius: 4px;
+  border: 1px solid #aaa;
+}
+
+.search-form button {
+  background-color: #001f3f;
+  color: white;
+  border: none;
+  padding: 9px 14px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.9rem;
+}
+
+.navbar {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin: 10px;
+}
+
+.navbar a {
+  background-color: #001f3f;
+  color: white;
+  padding: 8px 15px;
+  border-radius: 5px;
+  text-decoration: none;
+  transition: background 0.3s;
+}
+
+.navbar a:hover {
+  background-color: #0074D9;
+}
+
+.gallery-container {
+  margin-top: 20px;
+}
+
+.gallery {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 10px;
+  margin: 20px;
+}
+
+.gallery-img {
+  width: 100%;
+  border-radius: 8px;
+  transition: transform 0.4s ease;
+}
+
+.gallery-img:hover {
+  transform: scale(1.05);
+}
