@@ -1,0 +1,21 @@
+body {
+  margin: 0;
+  font-family: "Poppins", sans-serif;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.app {
+  text-align: center;
+  padding: 50px;
+  height: 100vh;
+}
+
+.app.light {
+  background-color: #f8f9fa;
+  color: #222;
+}
+
+.app.dark {
+  background-color: #222;
+  color: #f8f9fa;
+}
